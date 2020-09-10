@@ -1,24 +1,35 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from "react";
+import InputBar from "./components/InputBar/InputBar";
+import ProfileCard from "./components/ProfileCard/ProfileCard";
 
 function App() {
+  const [githubData, setGithubData] = useState([]);
+
+  async function fetchGitHubData(user) {
+    const res = await fetch(`https://api.github.com/users/${user}`);
+    const data = await res.json();
+    setGithubData([...githubData, data]);
+  }
+
+  const handleSearch = (user) => {
+    fetchGitHubData(user);
+  };
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
+      <InputBar handleSearch={handleSearch} />
+      {githubData.length > 0 ? (
+        githubData.map((data) => <ProfileCard data={data} />)
+      ) : (
+        <h1
+          style={{
+            textAlign: "center",
+            margin: "100px auto",
+          }}
         >
-          Learn React
-        </a>
-      </header>
+          Add a GitHub use to Compare them.
+        </h1>
+      )}
     </div>
   );
 }
